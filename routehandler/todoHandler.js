@@ -7,9 +7,9 @@ const Todo = new mongoose.model("Todo",todoSchema);
 
 //Get all the todos
 
-router.get('/retriveAllTodods',async (req,res)=>{
+router.get('/retriveAllTodods', (req,res)=>{
 
-    await Todo.find({status:"active"},(err,data)=>{
+     Todo.find({status:"active"},(err,data)=>{
         if(err){
 
             res.status(500).json({message:err.message});
@@ -28,28 +28,27 @@ router.get('/retriveAllTodods',async (req,res)=>{
 //Get a todo
 router.get('/:id',async (req,res)=>{
 
-    await Todo.find({_id:req.params.id}).exec((err,data)=>{
+    try{
+        const data = await Todo.find({_id:req.params.id}).exec();
 
-        if(err){
-            res.status(500).json({message: err.message});
-        }else{
-            res.status(200).json({
-                message: "get one todo item",
-                result: data
-            });
-        }
-
-    });
+        res.status(200).json({
+            message: "get one todo item",
+            result: data
+        });
+    }catch(err){
+        res.status(500).json({message: err.message});
+ 
+    }
 
 });
 
 //create a todo
-router.post('/create/',async (req,res)=>{
+router.post('/create/', (req,res)=>{
     console.log(req.body);
 
     const newTodo = new Todo(req.body);
     
-    await newTodo.save((err)=>{
+     newTodo.save((err)=>{
         if(err){
             console.log(err.message);
             res.status(500).send(err.message);
@@ -62,10 +61,10 @@ router.post('/create/',async (req,res)=>{
 });
 
 //create multiple todo
-router.post('/createMultipleTodo', async(req,res)=>{
+router.post('/createMultipleTodo', (req,res)=>{
 
     console.log(req.body);
-await  Todo.insertMany(req.body,(err)=>{    
+  Todo.insertMany(req.body,(err)=>{    
     if(err){
         console.log(err.message);
         res.status(500).send(err.message);
@@ -90,8 +89,8 @@ router.put('/updateTodo/:id',(req,res)=>{
 
 });
 
-router.delete('/deleteTodo/:id',async (req,res)=>{
-    await Todo.deleteOne({_id:req.params.id},(err)=>{
+router.delete('/deleteTodo/:id', (req,res)=>{
+     Todo.deleteOne({_id:req.params.id},(err)=>{
        if(err){
            res.send(500).json({
 
